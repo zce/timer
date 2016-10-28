@@ -2,10 +2,9 @@ const path = require('path')
 const webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-/**
- * 二次包装的 Webpack 配置
- */
+// options
 const config = {
   env: process.env.NODE_ENV || 'development',
   paths: {
@@ -23,9 +22,6 @@ const config = {
   sourceMap: { js: true, css: true }
 }
 
-/**
- * 获取资源文件相对路径
- */
 function assetPath (...paths) {
   return path.posix.join(config.paths.assets, ...paths)
 }
@@ -36,7 +32,7 @@ module.exports = {
   output: {
     path: config.paths.output,
     publicPath: config.paths.publicPath,
-    filename: '[name].js'
+    filename: assetPath('js', '[name].js?v=[hash:6]')
   },
   module: {
     rules: [
@@ -80,7 +76,7 @@ module.exports = {
         loader: 'url',
         options: {
           limit: 10000,
-          name: assetPath('img', '[name].[ext]?[hash:6]')
+          name: assetPath('img', '[name].[ext]?v=[hash:6]')
         }
       },
       {
@@ -88,7 +84,7 @@ module.exports = {
         loader: 'url',
         options: {
           limit: 10000,
-          name: assetPath('font', '[name].[ext]?[hash:6]')
+          name: assetPath('font', '[name].[ext]?v=[hash:6]')
         }
       }
     ]
@@ -130,12 +126,13 @@ module.exports = {
   ]
 }
 
-if (process.env.NODE_ENV === 'production') {
-  // module.exports.devtool = 'source-map'
-  // http://vue-loader.vuejs.org/en/workflow/production.html
+if (config.env === 'production') {
+  module.exports.devtool = 'source-map'
   module.exports.plugins = (module.exports.plugins || []).concat([
+    new ExtractTextPlugin(assetPath('css', '[name].css?v=[hash:6]')),
     new webpack.optimize.UglifyJsPlugin({
       compress: { warnings: false },
+      comments: false,
       sourceMap: true
     }),
     new webpack.LoaderOptionsPlugin({
