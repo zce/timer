@@ -26,6 +26,23 @@ function assetPath (...paths) {
   return path.posix.join(config.paths.assets, ...paths)
 }
 
+function styleLoader (type) {
+  if (config.env !== 'production') {
+    return `style!${(type === 'css' ? '' : 'css!')}${type}`
+  }
+  return ExtractTextPlugin.extract({
+    fallbackLoader: 'style',
+    loader: (type === 'css' ? [] : ['css']).concat([
+      {
+        loader: type,
+        options: {
+          sourceMap: true
+        }
+      }
+    ])
+  })
+}
+
 module.exports = {
   context: config.paths.root,
   entry: [path.join(config.paths.source, 'main.js')],
@@ -45,31 +62,19 @@ module.exports = {
         test: /\.vue$/,
         loader: 'vue',
         options: {
-          // vue-loader options go here
+          loaders: {
+            css: styleLoader('css'),
+            less: styleLoader('less')
+          }
         }
       },
       {
         test: /\.css$/,
-        use: [
-          'style',
-          'css'
-        ],
-        options: {
-          sourceMap: true
-        }
+        loader: styleLoader('css')
       },
       {
         test: /\.less$/,
-        use: [
-          'style',
-          'css',
-          {
-            loader: 'less',
-            options: {
-              sourceMap: true
-            }
-          }
-        ]
+        loader: styleLoader('less')
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
