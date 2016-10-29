@@ -55,6 +55,23 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
+        enforce: 'pre',
+        loader: 'eslint',
+        exclude: /node_modules/,
+        options: {
+          formatter: require("eslint-friendly-formatter")
+        }
+      },
+      {
+        test: /\.vue$/,
+        enforce: 'pre',
+        loader: 'eslint',
+        options: {
+          formatter: require("eslint-friendly-formatter")
+        }
+      },
+      {
+        test: /\.js$/,
         loader: 'babel',
         exclude: /node_modules/
       },
@@ -109,8 +126,9 @@ module.exports = {
     outputPath: config.paths.output,
     contentBase: config.paths.output,
     historyApiFallback: true,
-    noInfo: true,
-    quiet: true, // no default console
+    // // no default console
+    // noInfo: true,
+    // quiet: true,
     inline: true,
     hot: true
   },
