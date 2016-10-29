@@ -1,17 +1,19 @@
 <template>
-  <div id="app">
-    <h1>Hello world</h1>
-  </div>
+  <nav>
+    <h1>navigation</h1>
+  </nav>
 </template>
 
 <script>
   export default {
-    components: { },
+    name: 'sidebar',
+
     data () {
       return { }
     }
   }
 </script>
 
-<style>
+<style lang="less">
+
 </style>
